@@ -81,59 +81,58 @@ Hard-power-off an entire cluster node and watch Proxmox automatically restart it
 
 **Steps:**
 1. In the Proxmox UI, enable HA for the VMs on the target node (**Datacenter → HA → Add**).
-2. 2. Hard-power-off node 2 (no clean shutdown — pull the plug).
-   3. 3. Within ~30–60 seconds, Proxmox fences the node and relocates its VMs to nodes 1 and 3.
-      4.
-      5. > VMs restart cold (no memory state preserved). Fencing ensures the failed node cannot write to shared storage before VMs are restarted elsewhere, preventing disk corruption.
-         >
-         > ---
-         >
-         > ## Demo 5: Provision VMs with Terraform + Cloud-Init
-         >
-         > Spin up multiple fully-configured VMs in under a minute using a pre-built Ubuntu Cloud Image template, cloud-init for per-VM customization, and Terraform to orchestrate it all.
-         >
-         > ### Verify cloud-init on a cloned VM
-         >
-         > ```bash
-         > dpkg -l | grep cloud-init
-         > systemctl status cloud-init
-         >
-         > # Inspect cloud-init config passed via virtual CD
-         > lsblk
-         > sudo mount /dev/sr0 /mnt
-         > ls /mnt
-         > cat /mnt/user-data
-         > cat /mnt/network-config
-         >
-         > # View full cloud-init metadata and logs
-         > sudo cloud-init query --all | jq
-         > sudo cat /var/log/cloud-init.log
-         > ```
-         >
-         > ### Terraform
-         >
-         > ```bash
-         > # Review configuration
-         > nvim main.tf
-         > nvim terraform.tfvars
-         >
-         > # Provision VMs
-         > terraform init
-         > terraform apply -auto-approve
-         >
-         > # SSH into a provisioned VM
-         > ssh ubuntu@192.168.80.104
-         >
-         > # Tear everything down
-         > terraform destroy
-         > ```
-         >
-         > **`terraform.tfvars` parameters:**
-         > - `api_url` — Proxmox API endpoint
-         > - - `username` / `password` — API credentials (use a restricted token in production)
-         >   - - `template_id` — ID of the cloud-image template to clone
-         >     - - `target_node` / `storage` — where to deploy and store disks
-         >       - - `ssh_key` — public key injected into each VM
-         >         - - `vm_count` — number of VMs to provision
-         >           - - `cores` / `memory` — CPU and RAM per VM
-         >             - # proxmox
+2. Hard-power-off node 2 (no clean shutdown — pull the plug).
+3. Within ~30–60 seconds, Proxmox fences the node and relocates its VMs to nodes 1 and 3.
+
+> VMs restart cold (no memory state preserved). Fencing ensures the failed node cannot write to shared storage before VMs are restarted elsewhere, preventing disk corruption.
+
+---
+
+## Demo 5: Provision VMs with Terraform + Cloud-Init
+
+Spin up multiple fully-configured VMs in under a minute using a pre-built Ubuntu Cloud Image template, cloud-init for per-VM customization, and Terraform to orchestrate it all.
+
+### Verify cloud-init on a cloned VM
+
+```bash
+dpkg -l | grep cloud-init
+systemctl status cloud-init
+
+# Inspect cloud-init config passed via virtual CD
+lsblk
+sudo mount /dev/sr0 /mnt
+ls /mnt
+cat /mnt/user-data
+cat /mnt/network-config
+
+# View full cloud-init metadata and logs
+sudo cloud-init query --all | jq
+sudo cat /var/log/cloud-init.log
+```
+
+### Terraform
+
+```bash
+# Review configuration
+nvim main.tf
+nvim terraform.tfvars
+
+# Provision VMs
+terraform init
+terraform apply -auto-approve
+
+# SSH into a provisioned VM
+ssh ubuntu@192.168.80.104
+
+# Tear everything down
+terraform destroy
+```
+
+**`terraform.tfvars` parameters:**
+- `api_url` — Proxmox API endpoint
+- `username` / `password` — API credentials (use a restricted token in production)
+- `template_id` — ID of the cloud-image template to clone
+- `target_node` / `storage` — where to deploy and store disks
+- `ssh_key` — public key injected into each VM
+- `vm_count` — number of VMs to provision
+- `cores` / `memory` — CPU and RAM per VM
