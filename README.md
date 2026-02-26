@@ -1,5 +1,3 @@
-# proxmox
-
 Proxmox HCI demo running on a three-node Proxmox cluster with Ceph.
 
 ## Demo Overview
