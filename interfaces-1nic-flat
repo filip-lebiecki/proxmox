@@ -1,0 +1,13 @@
+auto lo
+iface lo inet loopback
+
+auto nic0
+iface nic0 inet manual
+
+auto vmbr0
+iface vmbr0 inet static
+	address 192.168.80.44/23
+	gateway 192.168.80.1
+	bridge-ports nic0
+	bridge-stp off
+	bridge-fd 0

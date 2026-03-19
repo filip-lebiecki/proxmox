@@ -1,0 +1,72 @@
+auto lo
+iface lo inet loopback
+
+auto nic0
+iface nic0 inet manual
+	mtu 9000
+
+auto nic2
+iface nic2 inet manual
+	mtu 9000
+
+auto bond0
+iface bond0 inet manual
+	bond-slaves nic0 nic2
+	bond-mode active-backup
+	bond-miimon 100
+	mtu 9000
+
+auto vmbr0
+iface vmbr0 inet manual
+	bridge-ports bond0
+	bridge-stp off
+	bridge-fd 0
+	bridge-vlan-aware yes
+	bridge-vids 10 12 80
+	bridge-pvid 4094
+	mtu 9000
+	post-up bridge vlan del dev vmbr0 vid 1 self || true
+	post-up bridge vlan add dev vmbr0 vid 4094 pvid untagged self || true
+
+auto vmbr0.10
+iface vmbr0.10 inet static
+	address 192.168.10.44/24
+	mtu 9000
+
+auto vmbr0.80
+iface vmbr0.80 inet static
+	address 192.168.80.44/23
+	gateway 192.168.80.1
+	mtu 1500
+
+auto nic1
+iface nic1 inet manual
+	mtu 9000
+
+auto nic3
+iface nic3 inet manual
+	mtu 9000
+
+auto bond1
+iface bond1 inet manual
+	bond-slaves nic1 nic3
+	bond-mode active-backup
+	bond-miimon 100
+	mtu 9000
+
+auto vmbr1
+iface vmbr1 inet manual
+	bridge-ports bond1
+	bridge-stp off
+	bridge-fd 0
+	bridge-vlan-aware yes
+	bridge-vids 20
+	bridge-pvid 4094
+	mtu 9000
+	post-up bridge vlan del dev vmbr1 vid 1 self || true
+	post-up bridge vlan add dev vmbr1 vid 4094 pvid untagged self || true
+
+auto vmbr1.20
+iface vmbr1.20 inet static
+	address 192.168.20.44/24
+	mtu 9000
